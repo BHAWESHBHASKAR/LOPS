@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Discover and characterize regimes in which different exact shortest-path strategies are optimal under strict correctness constraints
-**Current focus:** Phase 1 - Node Selection Infrastructure
+**Current focus:** Phase 2 - ML-Based Node Selection
 
 ## Current Position
 
-Phase: 1 of 5 (Node Selection Infrastructure)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-02-04 — Completed 01-04-PLAN.md (Comprehensive Selection Tests and Coverage Verification)
+Phase: 2 of 5 (ML-Based Node Selection)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-04 — Completed 02-01-PLAN.md (ML-Based Node Selection Infrastructure)
 
-Progress: [████░░░░░░] 13%
+Progress: [█████░░░░░] 17%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 2.0 min
-- Total execution time: 0.13 hours
+- Total plans completed: 5
+- Average duration: 1.8 min
+- Total execution time: 0.15 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-node-selection-infrastructure | 4 | 4 | 2.0 min |
+| 02-ml-based-node-selection | 1 | 4 | 1.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 1min, 2min, 2min, 6min
+- Last 5 plans: 1min, 2min, 2min, 6min, 1min
 - Trend: + (insufficient data)
 
 *Updated after each plan completion*
@@ -67,6 +68,14 @@ Recent decisions affecting current work:
 - Isolated nodes test to verify degree=0 handling - important for sparse graphs in contraction hierarchies
 - Correctness tests prove selected nodes are highest-degree - min selected degree >= max non-selected degree
 
+**From Phase 2 Plan 1 (02-01):**
+- Use only O(1) features for scalability - avoided expensive centrality measures (betweenness, closeness) that are O(nm) or O(n²)
+- Extend NodeSelector via inheritance - maintains clean separation, no modifications to base class
+- Graceful fallback to degree when model unavailable - use degree-based selection for backwards compatibility
+- Match MLPOrderer pattern from learned_ch_orderer.py - follow existing conventions for consistency
+- Feature extraction with 5 O(1) features: degree, out_degree, in_degree, clustering_coefficient, avg_neighbor_degree
+- Optional spatial features (spatial_x, spatial_y) when positions provided for geometric graphs
+
 ### Pending Todos
 
 None yet.
@@ -77,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-04 02:24 UTC
-Stopped at: Completed 01-04-PLAN.md (Comprehensive Selection Tests and Coverage Verification)
+Last session: 2026-02-04 22:51 UTC
+Stopped at: Completed 02-01-PLAN.md (ML-Based Node Selection Infrastructure)
 Resume file: None
