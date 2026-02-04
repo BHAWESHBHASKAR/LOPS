@@ -12,7 +12,7 @@ Time complexities:
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 import heapq
 
 from algorithms.base import Graph
@@ -164,3 +164,94 @@ class NodeSelector:
         node_degrees.sort(key=lambda x: x[1], reverse=True)
 
         return node_degrees
+
+    def select_top_k(self, k: int) -> Set[int]:
+        """
+        Select the top k nodes with highest degree.
+
+        This method uses heapq.nlargest() for optimal O(n log k) performance
+        when k << n. For k ≈ n, rank_nodes_by_degree() is more efficient.
+
+        Args:
+            k: Number of top nodes to select. Must satisfy 0 < k <= graph.nodes
+
+        Returns:
+            Set of k node IDs with highest degrees
+
+        Time complexity: O(n log k) where n = number of nodes
+        - Uses heapq.nlargest() which maintains a min-heap of size k
+        - More efficient than O(n log n) full sorting when k << n
+
+        Raises:
+            ValueError: If k <= 0 or k > number of nodes
+
+        Usage:
+            >>> from algorithms.node_selection import NodeSelector
+            >>> from algorithms.graph_gen import GraphGenerator
+            >>> g = GraphGenerator.scale_free_graph(100)
+            >>> ns = NodeSelector(g)
+            >>> top_10 = ns.select_top_k(10)
+            >>> print(f"Top 10 nodes: {top_10}")
+            >>> # Output: {42, 17, 3, 8, 55, 12, 67, 23, 9, 31}
+
+        Note:
+            This is preferred over rank_nodes_by_degree()[:k] when k is small
+            relative to n. Use rank_nodes_by_degree() when you need all nodes
+            or a large fraction (e.g., k > n/10).
+        """
+        if k <= 0:
+            raise ValueError(f"k must be positive, got {k}")
+        if k > self.graph.nodes:
+            raise ValueError(f"k cannot exceed number of nodes ({self.graph.nodes}), got {k}")
+
+        # Use heapq.nlargest for O(n log k) performance
+        # This is more efficient than sorted()[:k] when k << n
+        top_k_nodes = heapq.nlargest(k, range(self.graph.nodes), key=self.degree)
+
+        return set(top_k_nodes)
+
+    def select_top_k_percent(self, percentage: float) -> Set[int]:
+        """
+        Select the top k% of nodes with highest degree.
+
+        This method calculates k as a percentage of total nodes and selects
+        the top k nodes. Uses max(1, ...) to avoid k=0 for small percentages.
+
+        Args:
+            percentage: Fraction of nodes to select, in range (0, 1.0]
+                        Example: 0.05 for 5%, 0.10 for 10%, 1.0 for 100%
+
+        Returns:
+            Set of node IDs representing the top percentage of nodes by degree
+
+        Time complexity: O(n log k) where k = percentage * n
+        - Delegates to select_top_k() which uses heapq.nlargest()
+
+        Raises:
+            ValueError: If percentage <= 0 or percentage > 1.0
+
+        Usage:
+            >>> from algorithms.node_selection import NodeSelector
+            >>> from algorithms.graph_gen import GraphGenerator
+            >>> g = GraphGenerator.scale_free_graph(100)
+            >>> ns = NodeSelector(g)
+            >>> top_5_percent = ns.select_top_k_percent(0.05)
+            >>> print(f"Top 5% nodes: {top_5_percent}")
+            >>> # Output: {42, 17, 3, 8, 55} (5 nodes for 100-node graph)
+
+        Note:
+            Uses max(1, int(n * percentage)) to ensure at least 1 node is
+            selected even for small percentages. For example, 0.5% of a
+            100-node graph would select 1 node (not 0).
+        """
+        if percentage <= 0:
+            raise ValueError(f"percentage must be positive, got {percentage}")
+        if percentage > 1.0:
+            raise ValueError(f"percentage cannot exceed 1.0 (100%), got {percentage}")
+
+        # Calculate k from percentage, ensuring at least 1 node
+        # Use max(1, ...) to avoid off-by-one where k=0 for small percentages
+        k = max(1, int(self.graph.nodes * percentage))
+
+        # Delegate to select_top_k for actual selection
+        return self.select_top_k(k)
