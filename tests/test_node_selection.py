@@ -535,3 +535,155 @@ def test_selection_deterministic(scale_free_graph):
     # All selections should be identical
     assert selected_1 == selected_2 == selected_3, \
         "Selection is not deterministic"
+
+
+# ============================================================================
+# Error Handling Tests (Degree Methods)
+# ============================================================================
+
+def test_degree_invalid_node_id(scale_free_graph):
+    """
+    Test that degree() raises ValueError for invalid node IDs.
+
+    Verifies:
+    - node < 0 raises ValueError
+    - node >= graph.nodes raises ValueError
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Test node < 0
+    with pytest.raises(ValueError, match="Invalid node"):
+        selector.degree(-1)
+
+    # Test node >= graph.nodes
+    with pytest.raises(ValueError, match="Invalid node"):
+        selector.degree(scale_free_graph.nodes)
+
+
+def test_out_degree_invalid_node_id(scale_free_graph):
+    """
+    Test that out_degree() raises ValueError for invalid node IDs.
+
+    Verifies:
+    - node < 0 raises ValueError
+    - node >= graph.nodes raises ValueError
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Test node < 0
+    with pytest.raises(ValueError, match="Invalid node"):
+        selector.out_degree(-1)
+
+    # Test node >= graph.nodes
+    with pytest.raises(ValueError, match="Invalid node"):
+        selector.out_degree(scale_free_graph.nodes)
+
+
+def test_in_degree_invalid_node_id(scale_free_graph):
+    """
+    Test that in_degree() raises ValueError for invalid node IDs.
+
+    Verifies:
+    - node < 0 raises ValueError
+    - node >= graph.nodes raises ValueError
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Test node < 0
+    with pytest.raises(ValueError, match="Invalid node"):
+        selector.in_degree(-1)
+
+    # Test node >= graph.nodes
+    with pytest.raises(ValueError, match="Invalid node"):
+        selector.in_degree(scale_free_graph.nodes)
+
+
+# ============================================================================
+# Stress and Edge Case Tests
+# ============================================================================
+
+def test_very_large_graph_selection():
+    """
+    Test node selection on a very large graph (stress test).
+
+    Verifies:
+    - Selection works efficiently on large graphs
+    - Correct count is returned
+    - All selected nodes are valid
+    """
+    from algorithms.graph_gen import GraphGenerator
+
+    # Create a large graph (1000 nodes)
+    large_graph = GraphGenerator.scale_free_graph(1000, edges_per_node=2)
+    selector = NodeSelector(large_graph)
+
+    # Select top 5%
+    selected = selector.select_top_k_percent(0.05)
+    expected_count = max(1, int(1000 * 0.05))
+
+    assert len(selected) == expected_count, \
+        f"Expected {expected_count} nodes, got {len(selected)}"
+
+    # Verify all nodes are valid
+    for node in selected:
+        assert 0 <= node < large_graph.nodes, \
+            f"Invalid node {node} in selection"
+
+
+def test_graph_with_isolated_nodes():
+    """
+    Test selection on graph with isolated nodes (degree=0).
+
+    Verifies:
+    - Isolated nodes are not selected (unless k=nodes)
+    - Selection still works correctly
+    """
+    from algorithms.base import Graph
+
+    # Create a graph with some isolated nodes
+    graph = Graph(100)
+    selector = NodeSelector(graph)
+
+    # Add edges to create connected and isolated nodes
+    for i in range(50):
+        for j in range(i + 1, min(i + 5, 50)):
+            graph.add_edge(i, j)
+
+    # Nodes 50-99 are isolated (degree=0)
+    # Select top 10 nodes - should all be from connected component
+    selected = selector.select_top_k(10)
+
+    # All selected nodes should have degree > 0
+    for node in selected:
+        assert selector.degree(node) > 0, \
+            f"Node {node} has degree 0 but was selected"
+
+
+def test_selection_on_directed_vs_undirected():
+    """
+    Test that selection works correctly on both directed and undirected graphs.
+
+    Verifies:
+    - Selection returns correct count for directed graphs
+    - Selection returns correct count for undirected graphs
+    - All selected nodes are valid in both cases
+    """
+    from algorithms.graph_gen import GraphGenerator
+
+    # Test on scale-free (directed)
+    directed_graph = GraphGenerator.scale_free_graph(100, edges_per_node=2)
+    selector_directed = NodeSelector(directed_graph)
+    selected_directed = selector_directed.select_top_k(10)
+
+    assert len(selected_directed) == 10, "Directed graph selection failed"
+    for node in selected_directed:
+        assert 0 <= node < directed_graph.nodes, "Invalid node in directed selection"
+
+    # Test on grid (effectively undirected in our implementation)
+    undirected_graph = GraphGenerator.grid_graph(10, 10)
+    selector_undirected = NodeSelector(undirected_graph)
+    selected_undirected = selector_undirected.select_top_k(10)
+
+    assert len(selected_undirected) == 10, "Undirected graph selection failed"
+    for node in selected_undirected:
+        assert 0 <= node < undirected_graph.nodes, "Invalid node in undirected selection"
