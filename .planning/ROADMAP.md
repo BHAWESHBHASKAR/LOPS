@@ -34,12 +34,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 3. User can configure contraction percentage (k) and get selected node set
 4. System validates selected nodes are properly ranked by degree
 
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Create NodeSelector class with degree computation and caching
-- [ ] 01-02-PLAN.md — Implement node ranking and top-k selection methods
-- [ ] 01-03-PLAN.md — Add comprehensive parametrized test suite
+- [x] 01-01-PLAN.md — Create NodeSelector class with degree computation and caching
+- [x] 01-02-PLAN.md — Implement node ranking and top-k selection methods
+- [x] 01-03-PLAN.md — Add comprehensive parametrized test suite
+- [x] 01-04-PLAN.md — Comprehensive selection tests and coverage verification
 
 ### Phase 2: ML-Based Node Selection
 
@@ -58,8 +59,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Extend learned_ch_orderer.py for partial contraction context
-- [ ] 02-02: Implement training pipeline for graph feature-based node scoring
+- [ ] 02-01-PLAN.md — Create MLNodeSelector class and feature extraction utilities
+- [ ] 02-02-PLAN.md — Implement training pipeline for graph feature-based node scoring
 
 ### Phase 3: Partial Contraction
 
