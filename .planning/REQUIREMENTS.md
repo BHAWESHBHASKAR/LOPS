@@ -83,23 +83,23 @@
 | NS-03 | Phase 1 | Pending |
 | NS-04 | Phase 2 | Pending |
 | NS-05 | Phase 2 | Pending |
-| PC-01 | Phase 2 | Pending |
-| PC-02 | Phase 2 | Pending |
-| PC-03 | Phase 2 | Pending |
-| PC-04 | Phase 2 | Pending |
-| HQ-01 | Phase 3 | Pending |
-| HQ-02 | Phase 3 | Pending |
-| HQ-03 | Phase 3 | Pending |
-| HQ-04 | Phase 3 | Pending |
-| CV-01 | Phase 3 | Pending |
-| CV-02 | Phase 3 | Pending |
-| CV-03 | Phase 3 | Pending |
-| CV-04 | Phase 2 | Pending |
-| BR-01 | Phase 4 | Pending |
-| BR-02 | Phase 4 | Pending |
-| BR-03 | Phase 4 | Pending |
-| BR-04 | Phase 4 | Pending |
-| BR-05 | Phase 4 | Pending |
+| PC-01 | Phase 3 | Pending |
+| PC-02 | Phase 3 | Pending |
+| PC-03 | Phase 3 | Pending |
+| PC-04 | Phase 3 | Pending |
+| CV-04 | Phase 3 | Pending |
+| HQ-01 | Phase 4 | Pending |
+| HQ-02 | Phase 4 | Pending |
+| HQ-03 | Phase 4 | Pending |
+| HQ-04 | Phase 4 | Pending |
+| CV-01 | Phase 4 | Pending |
+| CV-02 | Phase 4 | Pending |
+| CV-03 | Phase 4 | Pending |
+| BR-01 | Phase 5 | Pending |
+| BR-02 | Phase 5 | Pending |
+| BR-03 | Phase 5 | Pending |
+| BR-04 | Phase 5 | Pending |
+| BR-05 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 21 total
@@ -108,4 +108,4 @@
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 after initial definition*
+*Last updated: 2026-02-04 after roadmap creation*
