@@ -272,3 +272,266 @@ def test_empty_graph():
     # Test ranking
     ranking = selector.rank_nodes_by_degree()
     assert len(ranking) == 0, "Empty graph should have empty ranking"
+
+
+# ============================================================================
+# Top-K Selection Tests (Absolute Count)
+# ============================================================================
+
+@pytest.mark.parametrize("k,expected_count", [
+    (1, 1),
+    (10, 10),
+    (50, 50),
+    (100, 100)
+])
+def test_select_top_k_count(scale_free_graph, k, expected_count):
+    """
+    Parametrized test: verify select_top_k() returns correct count.
+
+    Tests various values of k from 1 to 100 (full graph).
+    Verifies that exactly k nodes are selected.
+    """
+    selector = NodeSelector(scale_free_graph)
+    selected = selector.select_top_k(k)
+
+    assert len(selected) == expected_count, \
+        f"Expected {expected_count} nodes, got {len(selected)}"
+
+
+def test_select_top_k_correctness(scale_free_graph):
+    """
+    Test that select_top_k() returns the actual highest-degree nodes.
+
+    Verifies:
+    - Selected nodes match top k from ranking
+    - Set comparison ensures exact match
+    """
+    selector = NodeSelector(scale_free_graph)
+    k = 10
+
+    # Select top 10 nodes
+    selected = selector.select_top_k(k)
+
+    # Get ranking and extract top 10
+    ranking = selector.rank_nodes_by_degree()
+    top_10_from_ranking = set(node for node, _ in ranking[:k])
+
+    # Verify exact match
+    assert selected == top_10_from_ranking, \
+        f"Selected nodes {selected} don't match top 10 from ranking {top_10_from_ranking}"
+
+
+def test_select_top_k_invalid(scale_free_graph):
+    """
+    Test that select_top_k() validates input parameters.
+
+    Verifies:
+    - k=0 raises ValueError
+    - k=-1 raises ValueError
+    - k=101 raises ValueError (graph has 100 nodes)
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Test k=0
+    with pytest.raises(ValueError, match="k must be positive"):
+        selector.select_top_k(0)
+
+    # Test k=-1
+    with pytest.raises(ValueError, match="k must be positive"):
+        selector.select_top_k(-1)
+
+    # Test k > number of nodes
+    with pytest.raises(ValueError, match="k cannot exceed number of nodes"):
+        selector.select_top_k(101)
+
+
+# ============================================================================
+# Top-K Selection Tests (Percentage)
+# ============================================================================
+
+@pytest.mark.parametrize("percentage,expected_count", [
+    (0.05, 5),   # 5% of 100 = 5
+    (0.10, 10),  # 10% of 100 = 10
+    (0.15, 15),  # 15% of 100 = 15
+    (0.20, 20),  # 20% of 100 = 20
+    (1.00, 100)  # 100% of 100 = 100
+])
+def test_select_top_k_percent_count(scale_free_graph, percentage, expected_count):
+    """
+    Parametrized test: verify select_top_k_percent() returns correct count.
+
+    Tests standard percentages: 5%, 10%, 15%, 20%, 100%
+    Verifies that exactly k% of nodes are selected.
+    """
+    selector = NodeSelector(scale_free_graph)
+    selected = selector.select_top_k_percent(percentage)
+
+    assert len(selected) == expected_count, \
+        f"Expected {expected_count} nodes for {percentage*100}%, got {len(selected)}"
+
+
+@pytest.mark.parametrize("percentage", [0.05, 0.10, 0.15, 0.20])
+def test_select_top_k_percent_correctness(scale_free_graph, percentage):
+    """
+    Parametrized test: verify select_top_k_percent() returns highest-degree nodes.
+
+    Tests that selected nodes match top k% from ranking.
+    Uses set comparison for exact match verification.
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Select top percentage of nodes
+    selected = selector.select_top_k_percent(percentage)
+
+    # Calculate expected k
+    k = max(1, int(scale_free_graph.nodes * percentage))
+
+    # Get ranking and extract top k
+    ranking = selector.rank_nodes_by_degree()
+    top_k_from_ranking = set(node for node, _ in ranking[:k])
+
+    # Verify exact match
+    assert selected == top_k_from_ranking, \
+        f"Selected nodes {selected} don't match top {k} from ranking {top_k_from_ranking}"
+
+
+def test_select_top_k_percent_invalid(scale_free_graph):
+    """
+    Test that select_top_k_percent() validates input parameters.
+
+    Verifies:
+    - percentage=0.0 raises ValueError
+    - percentage=-0.1 raises ValueError
+    - percentage=1.5 raises ValueError
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Test percentage=0.0
+    with pytest.raises(ValueError, match="percentage must be positive"):
+        selector.select_top_k_percent(0.0)
+
+    # Test percentage=-0.1
+    with pytest.raises(ValueError, match="percentage must be positive"):
+        selector.select_top_k_percent(-0.1)
+
+    # Test percentage > 1.0
+    with pytest.raises(ValueError, match="percentage cannot exceed 1.0"):
+        selector.select_top_k_percent(1.5)
+
+
+# ============================================================================
+# Cross-Graph Type Selection Tests
+# ============================================================================
+
+@pytest.mark.parametrize("graph_fixture", ["grid_graph", "scale_free_graph", "geometric_graph"])
+@pytest.mark.parametrize("percentage", [0.05, 0.10, 0.15, 0.20])
+def test_selection_works_on_all_graph_types(graph_fixture, percentage, request):
+    """
+    Parametrized test: verify selection works across all graph types.
+
+    Tests node selection on grid, scale-free, and geometric graphs
+    with multiple percentages (5%, 10%, 15%, 20%).
+
+    Verifies:
+    - Correct number of nodes selected
+    - All selected nodes are valid (within graph bounds)
+    """
+    # Get the fixture by name
+    if graph_fixture == "geometric_graph":
+        graph, _ = request.getfixturevalue(graph_fixture)
+    else:
+        graph = request.getfixturevalue(graph_fixture)
+
+    selector = NodeSelector(graph)
+    selected = selector.select_top_k_percent(percentage)
+
+    # Calculate expected count
+    expected_count = max(1, int(graph.nodes * percentage))
+
+    # Verify count
+    assert len(selected) == expected_count, \
+        f"{graph_fixture}: Expected {expected_count} nodes for {percentage*100}%, got {len(selected)}"
+
+    # Verify all selected nodes are valid
+    for node in selected:
+        assert 0 <= node < graph.nodes, \
+            f"{graph_fixture}: Invalid node ID {node} (valid range: [0, {graph.nodes - 1}])"
+
+
+# ============================================================================
+# Selection Correctness Tests
+# ============================================================================
+
+def test_selected_nodes_are_highest_degree(scale_free_graph):
+    """
+    Critical correctness test: verify selected nodes actually have highest degrees.
+
+    This test proves that select_top_k_percent() correctly identifies
+    the nodes with the highest degrees.
+
+    Verifies:
+    - Minimum degree in selected set >= maximum degree in non-selected set
+    - This ensures ALL selected nodes have degree >= ALL non-selected nodes
+    """
+    selector = NodeSelector(scale_free_graph)
+    percentage = 0.10  # Select top 10%
+
+    # Select top 10% nodes
+    selected = selector.select_top_k_percent(percentage)
+
+    # Get degrees of selected and non-selected nodes
+    selected_degrees = [selector.degree(node) for node in selected]
+    all_nodes = set(range(scale_free_graph.nodes))
+    non_selected = all_nodes - selected
+    non_selected_degrees = [selector.degree(node) for node in non_selected]
+
+    # Verify correctness
+    min_selected_degree = min(selected_degrees) if selected_degrees else 0
+    max_non_selected_degree = max(non_selected_degrees) if non_selected_degrees else 0
+
+    assert min_selected_degree >= max_non_selected_degree, \
+        f"Selection incorrect: min selected degree ({min_selected_degree}) < " \
+        f"max non-selected degree ({max_non_selected_degree})"
+
+
+def test_selection_is_subset_of_nodes(scale_free_graph):
+    """
+    Test that selected nodes are always a subset of graph nodes.
+
+    Verifies:
+    - All selected nodes are valid node IDs
+    - No duplicate selections
+    - Selection is a set (no duplicates)
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    for k in [1, 10, 50, 100]:
+        selected = selector.select_top_k(k)
+
+        # Verify all nodes are valid
+        for node in selected:
+            assert 0 <= node < scale_free_graph.nodes, \
+                f"Invalid node {node} selected (valid range: [0, {scale_free_graph.nodes - 1}])"
+
+        # Verify no duplicates (should be a set)
+        assert len(selected) == len(set(selected)), \
+            f"Selection contains duplicates for k={k}"
+
+
+def test_selection_deterministic(scale_free_graph):
+    """
+    Test that selection is deterministic (same input → same output).
+
+    Verifies:
+    - Multiple calls with same parameters return same result
+    """
+    selector = NodeSelector(scale_free_graph)
+
+    # Select top 10 nodes three times
+    selected_1 = selector.select_top_k(10)
+    selected_2 = selector.select_top_k(10)
+    selected_3 = selector.select_top_k(10)
+
+    # All selections should be identical
+    assert selected_1 == selected_2 == selected_3, \
+        "Selection is not deterministic"
