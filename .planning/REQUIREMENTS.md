@@ -78,9 +78,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NS-01 | Phase 1 | Pending |
-| NS-02 | Phase 1 | Pending |
-| NS-03 | Phase 1 | Pending |
+| NS-01 | Phase 1 | Complete |
+| NS-02 | Phase 1 | Complete |
+| NS-03 | Phase 1 | Complete |
 | NS-04 | Phase 2 | Pending |
 | NS-05 | Phase 2 | Pending |
 | PC-01 | Phase 3 | Pending |
