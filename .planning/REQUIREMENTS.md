@@ -81,8 +81,8 @@
 | NS-01 | Phase 1 | Complete |
 | NS-02 | Phase 1 | Complete |
 | NS-03 | Phase 1 | Complete |
-| NS-04 | Phase 2 | Pending |
-| NS-05 | Phase 2 | Pending |
+| NS-04 | Phase 2 | Complete |
+| NS-05 | Phase 2 | Complete |
 | PC-01 | Phase 3 | Pending |
 | PC-02 | Phase 3 | Pending |
 | PC-03 | Phase 3 | Pending |
