@@ -56,11 +56,12 @@ Plans:
 3. System extends existing learned_ch_orderer.py for PCH context
 4. Model predictions improve node selection vs degree-only baseline
 
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
 - [ ] 02-01-PLAN.md — Create MLNodeSelector class and feature extraction utilities
 - [ ] 02-02-PLAN.md — Implement training pipeline for graph feature-based node scoring
+- [ ] 02-03-PLAN.md — Validate ML model performance against degree-based baseline
 
 ### Phase 3: Partial Contraction
 
@@ -138,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Node Selection Infrastructure | 4/4 | Complete ✓ | 2026-02-04 |
-| 2. ML-Based Node Selection | 0/2 | Not started | - |
+| 2. ML-Based Node Selection | 0/3 | Not started | - |
 | 3. Partial Contraction | 0/3 | Not started | - |
 | 4. Hybrid Query System | 0/4 | Not started | - |
 | 5. Benchmarking & Regime Analysis | 0/3 | Not started | - |
