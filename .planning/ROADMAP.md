@@ -37,9 +37,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Implement degree computation for all graph nodes
-- [ ] 01-02: Implement node ranking and top-k selection
-- [ ] 01-03: Add configurable contraction percentage parameter
+- [ ] 01-01-PLAN.md — Create NodeSelector class with degree computation and caching
+- [ ] 01-02-PLAN.md — Implement node ranking and top-k selection methods
+- [ ] 01-03-PLAN.md — Add comprehensive parametrized test suite
 
 ### Phase 2: ML-Based Node Selection
 
@@ -136,7 +136,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Node Selection Infrastructure | 0/3 | Not started | - |
+| 1. Node Selection Infrastructure | 0/3 | Planning complete | - |
 | 2. ML-Based Node Selection | 0/2 | Not started | - |
 | 3. Partial Contraction | 0/3 | Not started | - |
 | 4. Hybrid Query System | 0/4 | Not started | - |
