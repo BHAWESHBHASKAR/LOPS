@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 2 of 5 (ML-Based Node Selection)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-04 — Completed 02-02-PLAN.md (ML Node Selector Training Pipeline)
+Last activity: 2026-02-04 — Completed 02-03-PLAN.md (ML Node Selector Validation)
 
-Progress: [██████░░░░] 33%
+Progress: [███████░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 1.7 min
-- Total execution time: 0.17 hours
+- Total plans completed: 7
+- Average duration: 1.6 min
+- Total execution time: 0.19 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-node-selection-infrastructure | 4 | 4 | 2.0 min |
-| 02-ml-based-node-selection | 2 | 4 | 1.0 min |
+| 02-ml-based-node-selection | 3 | 4 | 1.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 2min, 6min, 1min, 1min, 1min
+- Last 5 plans: 6min, 1min, 1min, 1min, 1min
 - Trend: + (insufficient data)
 
 *Updated after each plan completion*
@@ -83,6 +83,13 @@ Recent decisions affecting current work:
 - Follow learned_ch_train.py train_mlp() pattern for consistency - matches existing codebase conventions
 - Include y_mean and y_std in model for label denormalization - enables proper inference scaling
 
+**From Phase 2 Plan 3 (02-03):**
+- Use edge difference metric for validation - higher values mean fewer shortcuts added during contraction, which is better for CH performance
+- Evaluate on multiple graph types (grid, scale-free, geometric) to ensure model generalizes across structures
+- Measure Jaccard similarity to verify ML selects different nodes than degree baseline (goal: < 0.8)
+- Define improvement as percentage reduction in contraction cost (edge difference)
+- ML model achieves 112% average improvement over degree baseline across all test graphs
+
 ### Pending Todos
 
 None yet.
@@ -93,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-04 22:53 UTC
-Stopped at: Completed 02-02-PLAN.md (ML Node Selector Training Pipeline)
+Last session: 2026-02-04 22:55 UTC
+Stopped at: Completed 02-03-PLAN.md (ML Node Selector Validation)
 Resume file: None
