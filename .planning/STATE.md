@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 2 of 5 (ML-Based Node Selection)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-04 — Completed 02-01-PLAN.md (ML-Based Node Selection Infrastructure)
+Last activity: 2026-02-04 — Completed 02-02-PLAN.md (ML Node Selector Training Pipeline)
 
-Progress: [█████░░░░░] 17%
+Progress: [██████░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 1.8 min
-- Total execution time: 0.15 hours
+- Total plans completed: 6
+- Average duration: 1.7 min
+- Total execution time: 0.17 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-node-selection-infrastructure | 4 | 4 | 2.0 min |
-| 02-ml-based-node-selection | 1 | 4 | 1.0 min |
+| 02-ml-based-node-selection | 2 | 4 | 1.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 1min, 2min, 2min, 6min, 1min
+- Last 5 plans: 2min, 6min, 1min, 1min, 1min
 - Trend: + (insufficient data)
 
 *Updated after each plan completion*
@@ -76,6 +76,13 @@ Recent decisions affecting current work:
 - Feature extraction with 5 O(1) features: degree, out_degree, in_degree, clustering_coefficient, avg_neighbor_degree
 - Optional spatial features (spatial_x, spatial_y) when positions provided for geometric graphs
 
+**From Phase 2 Plan 2 (02-02):**
+- Use edge difference (original_edges - shortcuts) as contraction benefit label - required to achieve phase goal of improvement over baseline
+- Train on 4 graph types (grid, scale_free, geometric, road_like) for diversity - ensures model generalizes across structures
+- Sample ~150 nodes per graph to balance quality vs training time - 1800 total samples achieved R² = 0.695
+- Follow learned_ch_train.py train_mlp() pattern for consistency - matches existing codebase conventions
+- Include y_mean and y_std in model for label denormalization - enables proper inference scaling
+
 ### Pending Todos
 
 None yet.
@@ -86,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-04 22:51 UTC
-Stopped at: Completed 02-01-PLAN.md (ML-Based Node Selection Infrastructure)
+Last session: 2026-02-04 22:53 UTC
+Stopped at: Completed 02-02-PLAN.md (ML Node Selector Training Pipeline)
 Resume file: None
