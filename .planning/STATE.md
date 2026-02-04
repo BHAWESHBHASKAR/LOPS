@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 1 of 5 (Node Selection Infrastructure)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-02-04 — Roadmap created
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-04 — Completed 01-01-PLAN.md (Degree Computation Infrastructure)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 3%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: - min
-- Total execution time: 0.0 hours
+- Total plans completed: 1
+- Average duration: 1 min
+- Total execution time: 0.02 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-node-selection-infrastructure | 1 | 3 | 1 min |
 
 **Recent Trend:**
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 1min
+- Trend: - (insufficient data)
 
 *Updated after each plan completion*
 
@@ -42,7 +42,11 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-None yet.
+**From Phase 1 Plan 1 (01-01):**
+- Use total degree (out + in) as primary metric for node importance - most meaningful for contraction hierarchies
+- Cache total degree computations only, not individual out/in degrees - balances performance and simplicity
+- Manual cache invalidation via clear_cache() - simple, explicit, avoids auto-invalidation complexity
+- Dataclass pattern for NodeSelector - leverages automatic __init__, type safety, immutability benefits
 
 ### Pending Todos
 
@@ -54,6 +58,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-04 (initialization)
-Stopped at: Roadmap creation complete
+Last session: 2026-02-04 02:10 UTC
+Stopped at: Completed 01-01-PLAN.md (Degree Computation Infrastructure)
 Resume file: None
