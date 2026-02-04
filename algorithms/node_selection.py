@@ -12,7 +12,8 @@ Time complexities:
 """
 
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, List, Tuple
+import heapq
 
 from algorithms.base import Graph
 
@@ -129,3 +130,37 @@ class NodeSelector:
             >>> degree = selector.degree(node)  # Recomputes with fresh data
         """
         self._degree_cache.clear()
+
+    def rank_nodes_by_degree(self) -> List[Tuple[int, int]]:
+        """
+        Rank all nodes by their total degree in descending order.
+
+        This method computes the degree for all nodes and returns them sorted
+        from highest degree to lowest. Useful for identifying the most important
+        nodes in the graph for contraction hierarchies.
+
+        Returns:
+            List of (node_id, degree) tuples sorted by degree descending.
+            Example: [(42, 15), (17, 12), (3, 10), ...] where node 42 has
+            the highest degree of 15.
+
+        Time complexity: O(n log n) where n = number of nodes
+        - Degree computation: O(n * m) on first call, O(n) if cached
+        - Sorting: O(n log n)
+
+        Usage:
+            >>> from algorithms.node_selection import NodeSelector
+            >>> from algorithms.graph_gen import GraphGenerator
+            >>> g = GraphGenerator.scale_free_graph(100)
+            >>> ns = NodeSelector(g)
+            >>> ranked = ns.rank_nodes_by_degree()
+            >>> print(f"Top 5 nodes: {ranked[:5]}")
+            >>> # Output: [(42, 15), (17, 12), (3, 10), (8, 9), (55, 8)]
+        """
+        # Create list of (node, degree) tuples for all nodes
+        node_degrees = [(node, self.degree(node)) for node in range(self.graph.nodes)]
+
+        # Sort by degree in descending order (highest degree first)
+        node_degrees.sort(key=lambda x: x[1], reverse=True)
+
+        return node_degrees
