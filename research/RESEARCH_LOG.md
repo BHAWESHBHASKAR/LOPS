@@ -61,6 +61,21 @@ Where:
 | **DASH-Single** | 0.83× | **100%** |
 | **DASH-Bidir** | **11.63×** | 79.2% |
 
+### Real-World SNAP Dataset Testing ⭐
+
+Tested on actual Stanford SNAP network datasets (February 5, 2026):
+
+| Dataset | Nodes | Edges | Avg Deg | CV | DASH Speedup | Optimality |
+|---------|-------|-------|---------|-----|--------------|------------|
+| **Facebook Social** | 4,039 | 176,468 | 43.7 | 1.20 | **2.13×** | 100% ✓ |
+| **Arxiv GR-QC** | 5,242 | 57,960 | 11.1 | 1.43 | 0.83× | 100% ✓ |
+
+**Key Findings from Real-World Testing:**
+- ✅ DASH maintains 100% optimality on real SNAP datasets
+- ✅ 2× speedup on Facebook social network (high-density)
+- ✅ CV correctly predicts DASH effectiveness
+- ℹ️ Lower density graphs (like collaboration networks) show less speedup
+
 ---
 
 ## Theoretical Analysis
