@@ -1,0 +1,103 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Testing artifacts
+Testing/
+CTestTestfile.cmake
+
+# Benchmark results
+*.csv
+*.json
+*.log
+
+# Planning and old files
+.planning/
+old/
+.old/
+backup/
+*.bak
+*.backup
+*.tmp
+*_old.*
+*_backup.*
+
+# Research temporary files
+research/*.o
+research/*.csv
+
+# Gemini/Agent files
+.gemini/
+.agent/
+
+# Environment
+.env
+.env.local
+*.local
+
+# Generated documentation
+docs/_build/
+*.doxygen
+
+# Profiling
+*.prof
+*.perf
+callgrind.*
+cachegrind.*
+
+# Coverage
+*.gcno
+*.gcda
+*.gcov
+coverage/
+
+# Debug
+*.dSYM/
+core
+core.*
+
+# Package managers
+node_modules/
+vendor/
+
+# Archives
+*.zip
+*.tar
+*.gz
+*.7z
+
+# Large data files
+*.bin
+*.dat
+data/
+datasets/
+
+# Temporary
+tmp/
+temp/
+*.temp
