@@ -194,3 +194,9 @@ add_executable(dash_advanced research/dash_advanced.cpp)
 target_link_libraries(dash_advanced photon_core)
 target_include_directories(dash_advanced PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
+
+# DASH SNAP Testing
+add_executable(dash_snap_test research/dash_snap_test.cpp)
+target_link_libraries(dash_snap_test photon_core)
+target_include_directories(dash_snap_test PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
