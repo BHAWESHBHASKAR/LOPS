@@ -200,3 +200,15 @@ add_executable(dash_snap_test research/dash_snap_test.cpp)
 target_link_libraries(dash_snap_test photon_core)
 target_include_directories(dash_snap_test PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
+
+# DASH Algorithm Showdown
+add_executable(algorithm_showdown research/algorithm_showdown.cpp)
+target_link_libraries(algorithm_showdown photon_core)
+target_include_directories(algorithm_showdown PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
+
+# DASH Correctness
+add_executable(dash_correctness research/dash_correctness.cpp)
+target_link_libraries(dash_correctness photon_core)
+target_include_directories(dash_correctness PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
