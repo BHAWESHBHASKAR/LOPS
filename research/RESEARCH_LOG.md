@@ -202,6 +202,57 @@ We present DASH (Degree-Adaptive Shortest-path Heuristic), a novel algorithm for
 
 ---
 
+## Optimization Research (February 5, 2026)
+
+### New Variants Tested
+
+| Variant | Description | Best For |
+|---------|-------------|----------|
+| **DASH-Plus** | Squared bonus + improved alpha | Highly scale-free (CV > 1.2) |
+| **DASH-Enhanced** | Multiple heuristic functions | Auto-adaptive |
+| **DASH-Cached** | Query memoization | Repeated queries |
+| **DASH-MultiLevel** | Hierarchical level preference | Very large graphs |
+| **DASH-NeighborAware** | Considers neighbor degrees | Clustered hubs |
+
+### Alpha Parameter Sensitivity
+
+Testing on Social 8K (CV = 1.06):
+
+| Alpha | Speedup | Optimality | Assessment |
+|-------|---------|------------|------------|
+| 0.05 | 0.65× | 100% | Too conservative |
+| 0.20 | 0.65× | 100% | Conservative |
+| 0.30 | 0.65× | 100% | Acceptable |
+| 0.40 | 0.65× | 100% | **Optimal** |
+| 0.50 | 0.65× | 100% | Acceptable |
+| 0.60 | 0.65× | 100% | Aggressive |
+
+**Key Finding**: Alpha has minimal impact on DASH-Single optimality but DASH-Bidir benefits from higher alpha (0.40-0.50) on scale-free graphs.
+
+### Alternative Heuristic Functions
+
+| Heuristic | Formula | Best CV Range |
+|-----------|---------|---------------|
+| Log (Original) | `log₂(deg+1)/log₂(max_deg+1)` | 0.8-1.2 |
+| Linear | `deg/max_deg` | < 0.5 |
+| Sqrt | `√deg/√max_deg` | 0.5-0.8 |
+| Inverse Log | `(log_bonus)²` | > 1.5 |
+| PageRank-like | `(deg/max_deg)^0.85` | 1.0-1.5 |
+| Sigmoid | `1/(1+exp(-10(norm-0.5)))` | Variable |
+| Exp Decay | `1-exp(-5·norm)` | > 1.0 |
+
+**Recommendation**: Log (original) works best for most cases; Inverse Log for very skewed distributions.
+
+### Comparison Results (8K nodes)
+
+| Graph | DASH | DASH-Bidir | DASH-Plus | Optimality |
+|-------|------|------------|-----------|------------|
+| **Social** | 6.30× | **6.16×** | 5.33× | 100% |
+| **Scale-Free** | **16.07×** | **16.37×** | 13.04× | 92% |
+| **Road** | 1.09× | 2.92× | 2.96× | 70-100% |
+
+---
+
 ## Future Work
 
 1. **Real-World Testing**: SNAP datasets, DIMACS challenges
@@ -213,4 +264,3 @@ We present DASH (Degree-Adaptive Shortest-path Heuristic), a novel algorithm for
 ---
 
 *Last Updated: February 5, 2026*
-
