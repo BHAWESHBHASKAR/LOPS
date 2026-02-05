@@ -188,3 +188,9 @@ target_include_directories(dash_optimization PRIVATE ${CMAKE_SOURCE_DIR}/include
 add_executable(dash_quick_opt research/dash_quick_opt.cpp)
 target_link_libraries(dash_quick_opt photon_core)
 target_include_directories(dash_quick_opt PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
+# DASH Advanced Research
+add_executable(dash_advanced research/dash_advanced.cpp)
+target_link_libraries(dash_advanced photon_core)
+target_include_directories(dash_advanced PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
