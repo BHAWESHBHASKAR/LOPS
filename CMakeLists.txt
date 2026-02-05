@@ -212,3 +212,9 @@ add_executable(dash_correctness research/dash_correctness.cpp)
 target_link_libraries(dash_correctness photon_core)
 target_include_directories(dash_correctness PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
+
+# Code Relation Demo
+add_executable(code_relation_demo research/code_relation_demo.cpp)
+target_link_libraries(code_relation_demo photon_core)
+target_include_directories(code_relation_demo PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
