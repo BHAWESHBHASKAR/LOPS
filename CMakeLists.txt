@@ -173,3 +173,8 @@ target_include_directories(dash_benchmark PRIVATE ${CMAKE_SOURCE_DIR}/include ${
 add_executable(dash_research research/dash_research.cpp)
 target_link_libraries(dash_research photon_core)
 target_include_directories(dash_research PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
+# DASH Publication Analysis
+add_executable(dash_publication research/dash_publication.cpp)
+target_link_libraries(dash_publication photon_core)
+target_include_directories(dash_publication PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
