@@ -103,6 +103,10 @@ vendor/
 data/
 datasets/
 
+# Allow website datasets for the visualizer
+!website/public/datasets/
+!website/public/datasets/*.json
+
 # Temporary
 tmp/
 temp/
