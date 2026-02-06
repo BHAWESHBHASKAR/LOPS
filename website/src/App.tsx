@@ -14,7 +14,7 @@ function App() {
     { id: 'hero', label: 'Overview', icon: Rocket },
     { id: 'math', label: 'The Math', icon: BookOpen },
     { id: 'benchmarks', label: 'Benchmarks', icon: Activity },
-    { id: 'simulation', label: 'Live Demo', icon: Zap },
+    { id: 'visualizers', label: 'Visualizers', icon: Zap },
     { id: 'code', label: 'Implementation', icon: GitBranch },
   ];
 
@@ -24,8 +24,8 @@ function App() {
       <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tighter">
-            <span className="text-primary">DASH</span>
-            <span className="text-gray-400 font-light">Algorithm</span>
+            <span className="text-primary">Pathfinding</span>
+            <span className="text-gray-400 font-light">Lab</span>
           </div>
 
           <div className="hidden md:flex items-center gap-8">
@@ -72,7 +72,7 @@ function App() {
           </div>
         </section>
 
-        <section id="simulation" className="py-24 px-6 max-w-7xl mx-auto">
+        <section id="visualizers" className="py-24 px-6 max-w-7xl mx-auto">
           <Simulation />
         </section>
 

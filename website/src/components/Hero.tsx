@@ -6,12 +6,12 @@ export const Hero = ({ setActiveSection }: { setActiveSection: (s: string) => vo
     return (
         <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
             {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-background to-background pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background to-background pointer-events-none" />
 
             {/* Animated Mesh Background (CSS only for perf) */}
             <div className="absolute inset-0 opacity-20"
                 style={{
-                    backgroundImage: 'radial-gradient(circle at center, #3b82f6 1px, transparent 1px)',
+                    backgroundImage: 'radial-gradient(circle at center, #14b8a6 1px, transparent 1px)',
                     backgroundSize: '40px 40px'
                 }}
             />
@@ -27,27 +27,27 @@ export const Hero = ({ setActiveSection }: { setActiveSection: (s: string) => vo
                     </div>
 
                     <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-500">
-                        DASH Algorithm
+                        Pathfinding Lab
                     </h1>
 
                     <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-                        Degree-Adaptive Shortest-path Heuristic.
+                        Multi-algorithm pathfinding lab.
                         <br />
-                        <span className="text-white font-medium">16× faster</span> than Dijkstra.
-                        <span className="text-white font-medium"> 100% optimal</span>.
+                        <span className="text-white font-medium">24× faster</span> than Dijkstra.
+                        <span className="text-white font-medium"> Exact + Approx</span>.
                         <br />
-                        Zero preprocessing.
+                        Real-world graph focus.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={() => {
-                                setActiveSection('simulation');
-                                document.getElementById('simulation')?.scrollIntoView({ behavior: 'smooth' });
+                                setActiveSection('visualizers');
+                                document.getElementById('visualizers')?.scrollIntoView({ behavior: 'smooth' });
                             }}
                             className="px-8 py-4 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
                         >
-                            Live Demo <ArrowRight size={18} />
+                            Visualizers <ArrowRight size={18} />
                         </button>
                         <button
                             onClick={() => {
