@@ -1,0 +1,48 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'>
+<rect width='100%' height='100%' fill='white' />
+<text x='400.0' y='30' text-anchor='middle' font-size='16' font-family='Arial'>Social 5K (k=12)</text>
+<line x1='70' y1='440' x2='770' y2='440' stroke='#333' stroke-width='1' />
+<line x1='70' y1='440' x2='70' y2='50' stroke='#333' stroke-width='1' />
+<line x1='70.0' y1='440' x2='70.0' y2='446' stroke='#333' stroke-width='1' />
+<text x='70.0' y='462' text-anchor='middle' font-size='12' font-family='Arial'>50.0</text>
+<line x1='210.0' y1='440' x2='210.0' y2='446' stroke='#333' stroke-width='1' />
+<text x='210.0' y='462' text-anchor='middle' font-size='12' font-family='Arial'>200</text>
+<line x1='770.0' y1='440' x2='770.0' y2='446' stroke='#333' stroke-width='1' />
+<text x='770.0' y='462' text-anchor='middle' font-size='12' font-family='Arial'>800</text>
+<line x1='64' y1='440.0' x2='70' y2='440.0' stroke='#333' stroke-width='1' />
+<text x='60' y='444.0' text-anchor='end' font-size='12' font-family='Arial'>0.60</text>
+<line x1='70' y1='440.0' x2='770' y2='440.0' stroke='#eee' stroke-width='1' />
+<line x1='64' y1='342.49999999999994' x2='70' y2='342.49999999999994' stroke='#333' stroke-width='1' />
+<text x='60' y='346.49999999999994' text-anchor='end' font-size='12' font-family='Arial'>0.69</text>
+<line x1='70' y1='342.49999999999994' x2='770' y2='342.49999999999994' stroke='#eee' stroke-width='1' />
+<line x1='64' y1='245.0' x2='70' y2='245.0' stroke='#333' stroke-width='1' />
+<text x='60' y='249.0' text-anchor='end' font-size='12' font-family='Arial'>0.77</text>
+<line x1='70' y1='245.0' x2='770' y2='245.0' stroke='#eee' stroke-width='1' />
+<line x1='64' y1='147.50000000000006' x2='70' y2='147.50000000000006' stroke='#333' stroke-width='1' />
+<text x='60' y='151.50000000000006' text-anchor='end' font-size='12' font-family='Arial'>0.86</text>
+<line x1='70' y1='147.50000000000006' x2='770' y2='147.50000000000006' stroke='#eee' stroke-width='1' />
+<line x1='64' y1='50.0' x2='70' y2='50.0' stroke='#333' stroke-width='1' />
+<text x='60' y='54.0' text-anchor='end' font-size='12' font-family='Arial'>0.95</text>
+<line x1='70' y1='50.0' x2='770' y2='50.0' stroke='#eee' stroke-width='1' />
+<text x='400.0' y='480' text-anchor='middle' font-size='13' font-family='Arial'>Preprocessing budget (ms)</text>
+<text x='20' y='250.0' text-anchor='middle' font-size='13' font-family='Arial' transform='rotate(-90 20 250.0)'>Mean tightness (h/d*)</text>
+<polyline fill='none' stroke='#1f77b4' stroke-width='2' points='70.0,365.4064412510999 210.0,218.5144988283163 770.0,76.89655172413792' />
+<circle cx='70.0' cy='365.4064412510999' r='4' fill='#1f77b4' />
+<circle cx='210.0' cy='218.5144988283163' r='4' fill='#1f77b4' />
+<circle cx='770.0' cy='76.89655172413792' r='4' fill='#1f77b4' />
+<polyline fill='none' stroke='#ff7f0e' stroke-width='2' points='70.0,413.10344827586204 210.0,267.7550877819915 770.0,132.12380874926177' />
+<rect x='66.0' y='409.10344827586204' width='8' height='8' fill='#ff7f0e' />
+<rect x='206.0' y='263.7550877819915' width='8' height='8' fill='#ff7f0e' />
+<rect x='766.0' y='128.12380874926177' width='8' height='8' fill='#ff7f0e' />
+<polyline fill='none' stroke='#2ca02c' stroke-width='2' points='70.0,378.65434434162364 210.0,255.41944920462024 770.0,114.5543101529125' />
+<polygon points='70.0,373.65434434162364 65.0,382.65434434162364 75.0,382.65434434162364' fill='#2ca02c' />
+<polygon points='210.0,250.41944920462024 205.0,259.41944920462026 215.0,259.41944920462026' fill='#2ca02c' />
+<polygon points='770.0,109.5543101529125 765.0,118.5543101529125 775.0,118.5543101529125' fill='#2ca02c' />
+<rect x='620' y='42' width='150' height='60' fill='white' stroke='#ddd' />
+<rect x='630' y='52' width='10' height='10' fill='#1f77b4' />
+<text x='646' y='60' font-size='12' font-family='Arial'>ALT-only</text>
+<rect x='630' y='70' width='10' height='10' fill='#ff7f0e' />
+<text x='646' y='78' font-size='12' font-family='Arial'>LIPS-only</text>
+<rect x='630' y='88' width='10' height='10' fill='#2ca02c' />
+<text x='646' y='96' font-size='12' font-family='Arial'>Combined</text>
+</svg>

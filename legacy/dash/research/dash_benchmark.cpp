@@ -18,13 +18,15 @@
  * - Web graphs (simulated)
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
+#include "photon/lops.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <map>
 #include <chrono>
 #include <random>
+#include <sstream>
 
 using namespace photon;
 using namespace photon::dash;
@@ -105,12 +107,17 @@ private:
         // Setup DASH
         DASH dash;
         dash.preprocess(graph);
+
+        // Setup LOPS
+        lops::LOPS lops_solver;
+        lops_solver.preprocess(graph);
         
         std::cout << "  DASH Config: α=" << std::fixed << std::setprecision(2) << dash.get_alpha()
                   << ", CV=" << dash.get_cv()
                   << (dash.is_scale_free() ? " [SCALE-FREE DETECTED]" : "")
                   << "\n";
         std::cout << "  Preprocessing: " << std::setprecision(0) << dash.get_preprocessing_time_us() << " μs\n\n";
+        std::cout << "  LOPS Preprocessing: " << std::setprecision(0) << lops_solver.get_preprocessing_time_us() << " μs\n\n";
         
         // Generate queries
         std::mt19937 rng(42);
@@ -154,7 +161,7 @@ private:
         });
         
         // Test DASH variants
-        auto benchmark_algo = [&](const char* algo_name, auto&& query_fn) {
+        auto benchmark_algo = [&](const char* algo_name, auto&& query_fn, double preprocessing_us) {
             double total_time = 0, total_nodes = 0;
             int optimal = 0;
             
@@ -184,13 +191,23 @@ private:
             results_.push_back({
                 algo_name, type, graph.num_nodes(), graph.num_edges(),
                 avg_time, speedup, total_nodes/NUM_QUERIES,
-                optimal, (int)NUM_QUERIES, dash.get_preprocessing_time_us()
+                optimal, (int)NUM_QUERIES, preprocessing_us
             });
         };
         
-        benchmark_algo("DASH", [&](NodeId s, NodeId t) { return dash.query(s, t); });
-        benchmark_algo("DASH-Single", [&](NodeId s, NodeId t) { return dash.query_single(s, t); });
-        benchmark_algo("DASH-Bidir", [&](NodeId s, NodeId t) { return dash.query_bidir(s, t); });
+        benchmark_algo("LIPS-Exact", [&](NodeId s, NodeId t) { return lops_solver.query_exact(s, t); },
+            lops_solver.get_preprocessing_time_us());
+        benchmark_algo("LIPS-Weighted", [&](NodeId s, NodeId t) { return lops_solver.query_approx(s, t, 1.3f); },
+            lops_solver.get_preprocessing_time_us());
+        benchmark_algo("LIPS-Hybrid", [&](NodeId s, NodeId t) { return lops_solver.query_hybrid(s, t, 1.3f); },
+            lops_solver.get_preprocessing_time_us());
+
+        benchmark_algo("DASH", [&](NodeId s, NodeId t) { return dash.query(s, t); },
+            dash.get_preprocessing_time_us());
+        benchmark_algo("DASH-Single", [&](NodeId s, NodeId t) { return dash.query_single(s, t); },
+            dash.get_preprocessing_time_us());
+        benchmark_algo("DASH-Bidir", [&](NodeId s, NodeId t) { return dash.query_bidir(s, t); },
+            dash.get_preprocessing_time_us());
     }
     
     void print_summary() {
@@ -251,23 +268,36 @@ private:
     }
     
     void export_results() {
-        std::ofstream csv("dash_benchmark_results.csv");
-        csv << "Algorithm,GraphType,Nodes,Edges,AvgTime_us,Speedup,NodesExplored,OptimalCount,TotalQueries,PreprocessingTime_us\n";
+        std::ostringstream payload;
+        payload << "Algorithm,GraphType,Nodes,Edges,AvgTime_us,Speedup,NodesExplored,OptimalCount,TotalQueries,PreprocessingTime_us\n";
         
         for (const auto& r : results_) {
-            csv << r.algorithm << ","
-                << r.graph_type << ","
-                << r.num_nodes << ","
-                << r.num_edges << ","
-                << r.avg_time_us << ","
-                << r.speedup << ","
-                << r.nodes_explored << ","
-                << r.optimal_count << ","
-                << r.total_queries << ","
-                << r.preprocessing_us << "\n";
+            payload << r.algorithm << ","
+                    << r.graph_type << ","
+                    << r.num_nodes << ","
+                    << r.num_edges << ","
+                    << r.avg_time_us << ","
+                    << r.speedup << ","
+                    << r.nodes_explored << ","
+                    << r.optimal_count << ","
+                    << r.total_queries << ","
+                    << r.preprocessing_us << "\n";
         }
         
-        std::cout << "Results exported to: dash_benchmark_results.csv\n";
+        const std::string csv_text = payload.str();
+        
+        std::ofstream csv("dash_benchmark_results.csv");
+        csv << csv_text;
+        csv.close();
+        
+        std::ofstream research_csv("../research/dash_benchmark_results.csv");
+        if (research_csv) {
+            research_csv << csv_text;
+            research_csv.close();
+        }
+        
+        std::cout << "Results exported to: dash_benchmark_results.csv"
+                  << " and ../research/dash_benchmark_results.csv\n";
     }
 };
 

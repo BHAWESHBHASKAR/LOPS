@@ -10,6 +10,7 @@
 #include "photon/graph.hpp"
 #include "photon/simd_queue.hpp"
 #include "photon/search.hpp"
+#include "photon/lops.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -111,6 +112,11 @@ public:
         if (stats.is_grid_like() && config_.num_threads > 1) {
             return Strategy::DELTA_STEPPING;
         }
+
+        // 5b. LOPS: large graphs without coordinates
+        if (config_.enable_lops && !stats.has_coordinates && stats.num_nodes > 1000) {
+            return Strategy::LOPS;
+        }
         
         // 6. Large sparse graph: bidirectional
         if (stats.is_sparse() && stats.num_nodes > 1000) {
@@ -152,6 +158,18 @@ public:
         graph_ = std::make_unique<Graph>(std::move(graph));
         cache_.clear();
         query_count_ = 0;
+
+        if (config_.enable_lops || config_.preferred_strategy == Strategy::LOPS) {
+            lops::LOPSParams params;
+            params.num_potentials = config_.lops_num_potentials;
+            params.num_anchors = config_.lops_num_anchors;
+            params.seed = config_.lops_seed;
+            params.label_range = config_.lops_label_range;
+            params.degree_weighted = config_.lops_degree_weighted;
+            params.use_upper_bound = config_.lops_use_upper_bound;
+            params.num_upper_bound_roots = config_.lops_num_ub_roots;
+            lops_.preprocess(*graph_, params);
+        }
     }
     
     // Check if graph is loaded
@@ -215,6 +233,22 @@ public:
                 result = search::parallel_wavefront(*graph_, source, target, 
                     config_.num_threads);
                 break;
+
+            case Strategy::LOPS: {
+                if (!lops_.ready()) {
+                    lops::LOPSParams params;
+                    params.num_potentials = config_.lops_num_potentials;
+                    params.num_anchors = config_.lops_num_anchors;
+                    params.seed = config_.lops_seed;
+                    params.label_range = config_.lops_label_range;
+                    params.degree_weighted = config_.lops_degree_weighted;
+                    params.use_upper_bound = config_.lops_use_upper_bound;
+                    params.num_upper_bound_roots = config_.lops_num_ub_roots;
+                    lops_.preprocess(*graph_, params);
+                }
+                result = lops_.query(source, target);
+                break;
+            }
                 
             default:
                 result = search::bidirectional_simd(*graph_, source, target);
@@ -267,6 +301,7 @@ private:
     std::unique_ptr<Graph> graph_;
     QueryCache cache_;
     StrategySelector selector_;
+    lops::LOPS lops_;
     std::atomic<size_t> query_count_{0};
 };
 
@@ -295,6 +330,14 @@ inline PathResult shortest_path(
             return search::a_star(graph, source, target);
         case Strategy::PARALLEL_WAVE:
             return search::parallel_wavefront(graph, source, target);
+        case Strategy::LOPS: {
+            lops::LOPSParams params;
+            lops::LOPS solver;
+            params.use_upper_bound = false;
+            params.num_upper_bound_roots = 0;
+            solver.preprocess(graph, params);
+            return solver.query(source, target);
+        }
         default:
             // AUTO: use strategy selector
             StrategySelector selector(config);

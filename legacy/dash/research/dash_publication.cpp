@@ -9,7 +9,7 @@
  * For publication in ESA, SODA, ALENEX
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>

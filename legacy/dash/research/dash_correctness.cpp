@@ -5,7 +5,7 @@
  * to verify theoretical claims.
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <vector>

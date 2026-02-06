@@ -11,7 +11,7 @@
  * 7. Machine learning enhanced parameter tuning
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>

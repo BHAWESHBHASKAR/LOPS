@@ -46,6 +46,7 @@ add_library(photon_core STATIC
     src/search/delta_stepping.cpp
     src/search/micro_ch.cpp
     src/search/parallel_wave.cpp
+    src/search/lops.cpp
     src/engine/photon.cpp
     src/engine/strategy_selector.cpp
     src/cache/query_cache.cpp
@@ -165,38 +166,38 @@ target_link_libraries(ewd_final photon_core)
 target_include_directories(ewd_final PRIVATE ${CMAKE_SOURCE_DIR}/research)
 
 # DASH Benchmark
-add_executable(dash_benchmark research/dash_benchmark.cpp)
+add_executable(dash_benchmark legacy/dash/research/dash_benchmark.cpp)
 target_link_libraries(dash_benchmark photon_core)
 target_include_directories(dash_benchmark PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 # DASH Research
-add_executable(dash_research research/dash_research.cpp)
+add_executable(dash_research legacy/dash/research/dash_research.cpp)
 target_link_libraries(dash_research photon_core)
 target_include_directories(dash_research PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 # DASH Publication Analysis
-add_executable(dash_publication research/dash_publication.cpp)
+add_executable(dash_publication legacy/dash/research/dash_publication.cpp)
 target_link_libraries(dash_publication photon_core)
 target_include_directories(dash_publication PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 # DASH Optimization Research
-add_executable(dash_optimization research/dash_optimization.cpp)
+add_executable(dash_optimization legacy/dash/research/dash_optimization.cpp)
 target_link_libraries(dash_optimization photon_core)
 target_include_directories(dash_optimization PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 # DASH Quick Optimization
-add_executable(dash_quick_opt research/dash_quick_opt.cpp)
+add_executable(dash_quick_opt legacy/dash/research/dash_quick_opt.cpp)
 target_link_libraries(dash_quick_opt photon_core)
 target_include_directories(dash_quick_opt PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 # DASH Advanced Research
-add_executable(dash_advanced research/dash_advanced.cpp)
+add_executable(dash_advanced legacy/dash/research/dash_advanced.cpp)
 target_link_libraries(dash_advanced photon_core)
 target_include_directories(dash_advanced PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 
 # DASH SNAP Testing
-add_executable(dash_snap_test research/dash_snap_test.cpp)
+add_executable(dash_snap_test legacy/dash/research/dash_snap_test.cpp)
 target_link_libraries(dash_snap_test photon_core)
 target_include_directories(dash_snap_test PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
@@ -208,13 +209,22 @@ target_include_directories(algorithm_showdown PRIVATE ${CMAKE_SOURCE_DIR}/includ
 
 
 # DASH Correctness
-add_executable(dash_correctness research/dash_correctness.cpp)
+add_executable(dash_correctness legacy/dash/research/dash_correctness.cpp)
 target_link_libraries(dash_correctness photon_core)
 target_include_directories(dash_correctness PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
+# LIPS Ablation (heuristic tightness)
+add_executable(lips_ablation research/lips_ablation.cpp)
+target_link_libraries(lips_ablation photon_core)
+target_include_directories(lips_ablation PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
+
+# Real-world SNAP benchmark (major algorithms)
+add_executable(real_world_benchmark research/real_world_benchmark.cpp)
+target_link_libraries(real_world_benchmark photon_core)
+target_include_directories(real_world_benchmark PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
 
 
 # Code Relation Demo
 add_executable(code_relation_demo research/code_relation_demo.cpp)
 target_link_libraries(code_relation_demo photon_core)
 target_include_directories(code_relation_demo PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/research)
-

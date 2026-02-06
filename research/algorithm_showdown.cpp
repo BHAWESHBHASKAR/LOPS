@@ -12,7 +12,7 @@
  * 8. Floyd-Warshall (all pairs - small graphs only)
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>

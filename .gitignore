@@ -39,6 +39,7 @@ CTestTestfile.cmake
 # Planning and old files
 .planning/
 old/
+legacy/
 .old/
 backup/
 *.bak
@@ -63,6 +64,11 @@ research/*.csv
 # Generated documentation
 docs/_build/
 *.doxygen
+
+# Unrequired markdown (keep primary READMEs)
+*.md
+!README.md
+!website/README.md
 
 # Profiling
 *.prof

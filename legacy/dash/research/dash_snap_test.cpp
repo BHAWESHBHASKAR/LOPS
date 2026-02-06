@@ -5,7 +5,7 @@
  * Supports edge list format commonly used by SNAP.
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -241,7 +241,7 @@ int main(int argc, char** argv) {
 ╚════════════════════════════════════════════════════════════════════════════════════════╝
 )" << std::endl;
 
-    const std::string data_dir = "../data/snap/";
+    const std::string data_dir = "/Users/bhaweshbhaskar/Desktop/isitpossible/data/snap/";
     
     // Define datasets to test
     struct Dataset {

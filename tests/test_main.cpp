@@ -3,6 +3,7 @@
  */
 
 #include "photon/photon.hpp"
+#include "photon/dash.hpp"
 #include <cassert>
 #include <iostream>
 #include <cmath>
@@ -165,6 +166,76 @@ TEST(astar_with_heuristic) {
     
     ASSERT(result.found());
     ASSERT_NEAR(result.distance, 18.0f, 0.001f);  // Manhattan distance on 10x10 grid
+}
+
+TEST(lops_correctness_small_graph) {
+    GraphBuilder builder(50, 200);
+    std::mt19937 rng(123);
+    std::uniform_int_distribution<NodeId> node_dist(0, 49);
+    std::uniform_real_distribution<float> weight_dist(1.0f, 5.0f);
+
+    for (int i = 0; i < 200; ++i) {
+        NodeId u = node_dist(rng);
+        NodeId v = node_dist(rng);
+        if (u != v) {
+            builder.add_edge(u, v, weight_dist(rng));
+        }
+    }
+
+    auto graph = builder.build();
+
+    lops::LOPS lops_solver;
+    lops_solver.preprocess(graph);
+
+    for (int i = 0; i < 25; ++i) {
+        NodeId s = node_dist(rng);
+        NodeId t = node_dist(rng);
+        if (s == t) { --i; continue; }
+
+        auto dij = search::dijkstra(graph, s, t);
+        auto lops = lops_solver.query(s, t);
+
+        if (dij.distance >= INF_DIST) {
+            ASSERT(lops.distance >= INF_DIST);
+        } else {
+            ASSERT_NEAR(dij.distance, lops.distance, 1e-4f);
+        }
+    }
+}
+
+TEST(dash_single_correctness_small_graph) {
+    GraphBuilder builder(50, 200);
+    std::mt19937 rng(321);
+    std::uniform_int_distribution<NodeId> node_dist(0, 49);
+    std::uniform_real_distribution<float> weight_dist(1.0f, 5.0f);
+
+    for (int i = 0; i < 200; ++i) {
+        NodeId u = node_dist(rng);
+        NodeId v = node_dist(rng);
+        if (u != v) {
+            builder.add_edge(u, v, weight_dist(rng));
+        }
+    }
+
+    auto graph = builder.build();
+
+    dash::DASH dash_solver;
+    dash_solver.preprocess(graph);
+
+    for (int i = 0; i < 25; ++i) {
+        NodeId s = node_dist(rng);
+        NodeId t = node_dist(rng);
+        if (s == t) { --i; continue; }
+
+        auto dij = search::dijkstra(graph, s, t);
+        auto dash = dash_solver.query_single(s, t);
+
+        if (dij.distance >= INF_DIST) {
+            ASSERT(dash.distance >= INF_DIST);
+        } else {
+            ASSERT_NEAR(dij.distance, dash.distance, 1e-4f);
+        }
+    }
 }
 
 // =============================================================================

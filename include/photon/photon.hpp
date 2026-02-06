@@ -10,6 +10,7 @@
 #include "photon/graph.hpp"
 #include "photon/simd_queue.hpp"
 #include "photon/search.hpp"
+#include "photon/lops.hpp"
 #include "photon/engine.hpp"
 
 namespace photon {

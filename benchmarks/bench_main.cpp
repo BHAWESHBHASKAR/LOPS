@@ -3,6 +3,7 @@
  */
 
 #include "photon/photon.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -10,6 +11,7 @@
 #include <algorithm>
 #include <fstream>
 #include <map>
+#include <sstream>
 
 using namespace photon;
 
@@ -75,6 +77,13 @@ private:
             t = dist(rng);
             while (t == s) t = dist(rng);
         }
+
+        // Preprocess DASH and LOPS once per graph
+        dash::DASH dash_solver;
+        dash_solver.preprocess(graph);
+
+        lops::LOPS lops_solver;
+        lops_solver.preprocess(graph);
         
         // Run Dijkstra first (baseline)
         BenchmarkResult dijkstra_result = run_algorithm(
@@ -116,6 +125,38 @@ private:
         run_and_record("Parallel Wavefront", 
             [](const Graph& g, NodeId s, NodeId t) { 
                 return search::parallel_wavefront(g, s, t); 
+            });
+
+        // LOPS (Lipschitz-Optimized Potential Search)
+        run_and_record("LIPS-Exact",
+            [&](const Graph&, NodeId s, NodeId t) {
+                return lops_solver.query_exact(s, t);
+            });
+
+        run_and_record("LIPS-Weighted",
+            [&](const Graph&, NodeId s, NodeId t) {
+                return lops_solver.query_approx(s, t, 1.3f);
+            });
+
+        run_and_record("LIPS-Hybrid",
+            [&](const Graph&, NodeId s, NodeId t) {
+                return lops_solver.query_hybrid(s, t, 1.3f);
+            });
+
+        // DASH variants
+        run_and_record("DASH-Single",
+            [&](const Graph&, NodeId s, NodeId t) {
+                return dash_solver.query_single(s, t);
+            });
+
+        run_and_record("DASH-Bidir",
+            [&](const Graph&, NodeId s, NodeId t) {
+                return dash_solver.query_bidir(s, t);
+            });
+
+        run_and_record("DASH-Auto",
+            [&](const Graph&, NodeId s, NodeId t) {
+                return dash_solver.query(s, t);
             });
         
         // PHOTON Auto
@@ -213,25 +254,38 @@ private:
     }
     
     void export_results() {
-        std::ofstream json("benchmark_results.json");
-        json << "{\n  \"results\": [\n";
+        std::ostringstream payload;
+        payload << "{\n  \"results\": [\n";
         
         for (size_t i = 0; i < results_.size(); ++i) {
             const auto& r = results_[i];
-            json << "    {\n";
-            json << "      \"graph\": \"" << r.graph_name << "\",\n";
-            json << "      \"algorithm\": \"" << r.algorithm << "\",\n";
-            json << "      \"avg_time_us\": " << r.avg_time_us << ",\n";
-            json << "      \"avg_nodes\": " << r.avg_nodes_per_query << ",\n";
-            json << "      \"speedup\": " << r.speedup_vs_dijkstra << ",\n";
-            json << "      \"correct\": " << (r.all_correct ? "true" : "false") << "\n";
-            json << "    }" << (i + 1 < results_.size() ? "," : "") << "\n";
+            payload << "    {\n";
+            payload << "      \"graph\": \"" << r.graph_name << "\",\n";
+            payload << "      \"algorithm\": \"" << r.algorithm << "\",\n";
+            payload << "      \"avg_time_us\": " << r.avg_time_us << ",\n";
+            payload << "      \"avg_nodes\": " << r.avg_nodes_per_query << ",\n";
+            payload << "      \"speedup\": " << r.speedup_vs_dijkstra << ",\n";
+            payload << "      \"correct\": " << (r.all_correct ? "true" : "false") << "\n";
+            payload << "    }" << (i + 1 < results_.size() ? "," : "") << "\n";
         }
         
-        json << "  ]\n}\n";
+        payload << "  ]\n}\n";
+        
+        const std::string json_text = payload.str();
+        
+        std::ofstream json("benchmark_results.json");
+        json << json_text;
         json.close();
         
-        std::cout << "\nResults exported to benchmark_results.json\n";
+        // Also export to research folder for automation
+        std::ofstream research_json("../research/benchmark_results.json");
+        if (research_json) {
+            research_json << json_text;
+            research_json.close();
+        }
+        
+        std::cout << "\nResults exported to benchmark_results.json";
+        std::cout << " and ../research/benchmark_results.json\n";
     }
 };
 

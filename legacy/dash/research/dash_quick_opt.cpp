@@ -3,7 +3,7 @@
  * Focused research on key improvement areas
  */
 
-#include "../include/photon/dash.hpp"
+#include "photon/dash.hpp"
 #include <iostream>
 #include <iomanip>
 #include <chrono>
