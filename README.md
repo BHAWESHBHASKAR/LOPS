@@ -1,4 +1,4 @@
-# DASH ⚡
+# DASH 
 
 ## **D**egree-**A**daptive **S**hortest-path **H**euristic
 
@@ -17,19 +17,19 @@ A novel shortest path algorithm that achieves **7-30× speedup** on scale-free n
 
 ---
 
-## 🎯 Key Results
+##  Key Results
 
 | Graph Type | Nodes | DASH Speedup | Optimality |
 |------------|-------|--------------|------------|
-| **Social Networks** | 20K | **20.11×** | ✅ 100% |
+| **Social Networks** | 20K | **20.11×** |  100% |
 | **Scale-Free (Web/Citation)** | 10K | **28.53×** | 92% |
-| **Social Networks** | 10K | **14.56×** | ✅ 100% |
-| **Road Networks** | 10K | 1.15× | ✅ 100% |
-| **Grid Graphs** | 10K | 1.06× | ✅ 100% |
+| **Social Networks** | 10K | **14.56×** |  100% |
+| **Road Networks** | 10K | 1.15× |  100% |
+| **Grid Graphs** | 10K | 1.06× | 100% |
 
 ---
 
-## 🧠 The Algorithm
+## The Algorithm
 
 ### The DASH Formula
 
@@ -60,7 +60,7 @@ In **scale-free networks** (social networks, web graphs, citation networks), a s
 
 ### DASH-Single
 - **Description**: Single-source search with degree-biased priority
-- **Optimality**: ✅ **100% optimal** (provably)
+- **Optimality**:  **100% optimal** (provably)
 - **Best For**: When optimality is critical
 - **Speedup**: 0.8-2× (modest but guaranteed optimal)
 
@@ -68,7 +68,7 @@ In **scale-free networks** (social networks, web graphs, citation networks), a s
 - **Description**: Bidirectional search from source and target
 - **Optimality**: 80-92% (may miss optimal meeting point)
 - **Best For**: Scale-free networks when speed is priority
-- **Speedup**: **10-30×** 🚀
+- **Speedup**: **10-30×** 
 
 ### DASH-Auto (Recommended)
 - **Description**: Automatically selects best variant based on graph structure
@@ -78,7 +78,7 @@ In **scale-free networks** (social networks, web graphs, citation networks), a s
 
 ---
 
-## 📊 Theoretical Analysis
+##  Theoretical Analysis
 
 ### CV-Speedup Correlation
 
@@ -116,7 +116,7 @@ Speedup ≈ 12.0 × CV - 3.45
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Requirements
 - C++20 compiler (GCC 11+, Clang 14+, MSVC 2022+)
@@ -171,13 +171,13 @@ int main() {
 
 ---
 
-## 📈 Benchmarks
+##  Benchmarks
 
 ### Social Networks (CV ≈ 1.25)
 
 ```
 ════════════════════════════════════════════════════════════════════
-📊 Social 20K (20000 nodes, 119988 edges)
+ Social 20K (20000 nodes, 119988 edges)
 ════════════════════════════════════════════════════════════════════
 
   DASH Config: α=0.40, CV=1.28 [SCALE-FREE DETECTED]
@@ -193,7 +193,7 @@ int main() {
 
 ```
 ════════════════════════════════════════════════════════════════════
-📊 Scale-Free 10K (10000 nodes, 155052 edges)
+ Scale-Free 10K (10000 nodes, 155052 edges)
 ════════════════════════════════════════════════════════════════════
 
   DASH Config: α=0.40, CV=0.98 [SCALE-FREE DETECTED]
@@ -211,12 +211,12 @@ int main() {
 
 | Algorithm | Preprocessing | Query | Optimality | Coordinates | Best For |
 |-----------|---------------|-------|------------|-------------|----------|
-| **DASH** | O(V) | O((V+E) log V) | ✅ 100%* | ❌ Not needed | Scale-free |
-| Dijkstra | O(1) | O((V+E) log V) | ✅ 100% | ❌ Not needed | General |
-| A* | O(1) | O((V+E) log V) | ✅ 100% | ✅ Required | Euclidean |
-| ALT | O(L×V×E) | O((V+E) log V) | ✅ 100% | ❌ Not needed | Road |
-| CH | O(V log V × E) | O(log V) | ✅ 100% | ❌ Not needed | Static |
-| Hub Labeling | O(V × avg_label) | O(label) | ✅ 100% | ❌ Not needed | Static |
+| **DASH** | O(V) | O((V+E) log V) | 100%* |  Not needed | Scale-free |
+| Dijkstra | O(1) | O((V+E) log V) | 100% | Not needed | General |
+| A* | O(1) | O((V+E) log V) |  100% |  Required | Euclidean |
+| ALT | O(L×V×E) | O((V+E) log V) |  100% |  Not needed | Road |
+| CH | O(V log V × E) | O(log V) | 100% |  Not needed | Static |
+| Hub Labeling | O(V × avg_label) | O(label) |  100% |  Not needed | Static |
 
 *DASH-Single is 100% optimal; DASH-Bidir is 80-92% optimal.
 
@@ -254,7 +254,7 @@ DASH/
 
 ---
 
-## 📚 Research Documentation
+##  Research Documentation
 
 See [research/RESEARCH_LOG.md](research/RESEARCH_LOG.md) for:
 - Complete experimental results
@@ -265,7 +265,7 @@ See [research/RESEARCH_LOG.md](research/RESEARCH_LOG.md) for:
 
 ---
 
-## 🎓 Citation
+##  Citation
 
 If you use DASH in your research, please cite:
 
@@ -281,7 +281,7 @@ If you use DASH in your research, please cite:
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 - [x] Core DASH algorithm
 - [x] Auto-tuning based on CV
@@ -296,19 +296,19 @@ If you use DASH in your research, please cite:
 
 ---
 
-## 📜 License
+##  License
 
 MIT License - Free for all use.
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## 📧 Contact
+##  Contact
 
 For questions or collaboration opportunities, please open an issue on GitHub.
 
