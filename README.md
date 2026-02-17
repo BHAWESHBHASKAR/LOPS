@@ -1,126 +1,123 @@
-# DASH ⚡
+# LOPS — Lipschitz-Optimized Potential Search
 
-## **D**egree-**A**daptive **S**hortest-path **H**euristic
+**Part of the PHOTON Shortest Path Engine**
 
-A novel shortest path algorithm that achieves **7-30× speedup** on scale-free networks by exploiting graph topology.
+A math-driven shortest path algorithm that constructs multiple global **1-Lipschitz potentials** and uses their maximum difference as an admissible, consistent A\* heuristic — no coordinates required.
 
 ```
-    ██████╗  █████╗ ███████╗██╗  ██╗
-    ██╔══██╗██╔══██╗██╔════╝██║  ██║
-    ██║  ██║███████║███████╗███████║
-    ██║  ██║██╔══██║╚════██║██╔══██║
-    ██████╔╝██║  ██║███████║██║  ██║
-    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-                    
-      Degree-Adaptive Shortest-path Heuristic
+    ██╗      ██████╗ ██████╗ ███████╗
+    ██║     ██╔═══██╗██╔══██╗██╔════╝
+    ██║     ██║   ██║██████╔╝███████╗
+    ██║     ██║   ██║██╔═══╝ ╚════██║
+    ███████╗╚██████╔╝██║     ███████║
+    ╚══════╝ ╚═════╝ ╚═╝     ╚══════╝
+
+      Lipschitz-Optimized Potential Search
 ```
 
 ---
 
-## 🎯 Key Results
+## The Core Idea
 
-| Graph Type | Nodes | DASH Speedup | Optimality |
-|------------|-------|--------------|------------|
-| **Social Networks** | 20K | **20.11×** | ✅ 100% |
-| **Scale-Free (Web/Citation)** | 10K | **28.53×** | 92% |
-| **Social Networks** | 10K | **14.56×** | ✅ 100% |
-| **Road Networks** | 10K | 1.15× | ✅ 100% |
-| **Grid Graphs** | 10K | 1.06× | ✅ 100% |
+LOPS builds potentials via multi-source Dijkstra with random anchor labels:
+
+```
+phi(v) = min_i ( label_i + dist(anchor_i, v) )
+```
+
+Each potential `phi` is **1-Lipschitz**, meaning:
+
+```
+|phi(u) - phi(v)| <= dist(u, v)
+```
+
+The heuristic for A\* search is then:
+
+```
+h(v, t) = max_i |phi_i(v) - phi_i(t)|
+```
+
+This heuristic is **admissible** (never overestimates) and **consistent** (satisfies the triangle inequality), guaranteeing optimal shortest paths when used with standard A\*.
+
+### Why LOPS Works
+
+1. **Orthogonal to Landmarks** — ALT-style landmarks excel on geometric graphs (roads, grids). LOPS captures complementary structure in non-geometric graphs (social, random, scale-free).
+2. **Combined Heuristic** — `max(h_ALT, h_LIPS)` preserves admissibility while capturing both geometric and topological structure.
+3. **Degree-Weighted Anchors** — Anchors are sampled proportional to `(log2(deg+1) + 1)^2`, biasing toward high-degree hubs for better coverage.
+4. **Auto-Tuning** — Number of potentials, anchors, landmarks, and label ranges all auto-tune based on graph size and degree CV.
+5. **No Coordinates Needed** — Unlike A\* with Euclidean heuristics, LOPS works on any graph topology.
 
 ---
 
-## 🧠 The Algorithm
+## Algorithm Variants
 
-### The DASH Formula
+### LIPS-Exact
+- Standard A\* search with LOPS heuristic (weight = 1.0)
+- **Optimality**: 100% guaranteed
+- Best for: When optimality is critical
 
-```
-π(v) = g(v) - α · log₂(deg(v)+1) / log₂(max_deg+1)
-```
+### LIPS-Weighted
+- Weighted A\* with inflated heuristic (default weight = 1.3)
+- Finds paths faster at the cost of slight suboptimality
+- Best for: When speed is the priority
 
-Where:
-- `g(v)` = actual distance from source to node v
-- `deg(v)` = out-degree of node v  
-- `max_deg` = maximum degree in the graph
-- `α` = adaptive weight parameter (auto-tuned based on graph structure)
+### LIPS-Hybrid
+- Runs weighted search first to get an upper bound, then exact search with pruning
+- Combines speed of weighted search with optimality guarantees
+- Best for: Best-of-both-worlds approach
 
-### Key Insight
-
-In **scale-free networks** (social networks, web graphs, citation networks), a small fraction of high-degree nodes ("hubs") handle a disproportionate amount of traffic. DASH exploits this by **prioritizing high-degree nodes** during search, effectively discovering "highway" paths earlier.
-
-### Why It Works
-
-1. **Scale-Free Property**: In power-law graphs, top 10% of nodes handle 40%+ of all edges
-2. **Hub Highways**: High-degree nodes form natural "shortcuts" between distant nodes
-3. **Early Discovery**: By biasing toward hubs, DASH finds good paths faster
-4. **Topology-Aware**: No coordinates needed—uses graph structure itself
+### Bidirectional Mode
+- All variants support bidirectional search from source and target simultaneously
+- Terminates when lower bounds prove optimality
+- Configurable per query type (exact vs weighted)
 
 ---
 
-## 🔬 Algorithm Variants
+## Key Findings
 
-### DASH-Single
-- **Description**: Single-source search with degree-biased priority
-- **Optimality**: ✅ **100% optimal** (provably)
-- **Best For**: When optimality is critical
-- **Speedup**: 0.8-2× (modest but guaranteed optimal)
+From the budget-matched ablation study comparing ALT-only, LIPS-only, and Combined heuristics under identical preprocessing wall-time budgets:
 
-### DASH-Bidir
-- **Description**: Bidirectional search from source and target
-- **Optimality**: 80-92% (may miss optimal meeting point)
-- **Best For**: Scale-free networks when speed is priority
-- **Speedup**: **10-30×** 🚀
+| Graph Type | ALT Dominates? | LIPS Dominates? | Best Strategy |
+|---|---|---|---|
+| **Road Networks** | Yes | No | ALT or Combined |
+| **Grid Graphs** | Yes | No | ALT or Combined |
+| **Random Graphs** | No | Yes | LIPS or Combined |
+| **Scale-Free Networks** | No | Partial | Combined |
+| **Social Networks** | No | Partial | Combined |
 
-### DASH-Auto (Recommended)
-- **Description**: Automatically selects best variant based on graph structure
-- **Strategy**: Uses Bidir for scale-free (CV > 0.8), Single otherwise
-- **Optimality**: 97%
-- **Speedup**: **6-20×**
+**Key takeaway**: The Combined heuristic (`max(h_ALT, h_LIPS)`) is consistently near-best across all graph families, adapting to either regime without sacrificing admissibility.
 
 ---
 
-## 📊 Theoretical Analysis
+## Theoretical Foundation
 
-### CV-Speedup Correlation
+### Admissibility Proof
 
-We discovered a strong correlation between the **Coefficient of Variation (CV)** of the degree distribution and DASH speedup:
+**Theorem**: The LOPS heuristic `h(v, t) = max_i |phi_i(v) - phi_i(t)|` is admissible and consistent.
 
-```
-Speedup ≈ 12.0 × CV - 3.45
-```
-
-| CV Range | Expected Speedup | Recommended α |
-|----------|------------------|---------------|
-| > 1.0 (scale-free) | 10-30× | 0.40 |
-| 0.8 - 1.0 | 5-10× | 0.25 |
-| 0.5 - 0.8 | 2-5× | 0.15 |
-| < 0.5 (uniform) | 1-2× | 0.05 |
-
-### Optimality Proof (DASH-Single)
-
-**Theorem**: DASH-Single is optimal when α < min_edge_weight.
-
-**Proof Sketch**:
-1. DASH modifies priority: `π(v) = g(v) - α·bonus(v)`
-2. Bonus is bounded: `0 ≤ bonus(v) ≤ 1`
-3. Priority shift bounded: `|shift| ≤ α`
-4. For any two nodes u, v with `g(u) < g(v)`, where `g(v) - g(u) ≥ min_edge_weight > α`:
-   - `π(u) < π(v)` (exploration order preserved)
-5. Therefore, optimality is maintained ∎
+**Proof**:
+1. Each potential `phi_i` is 1-Lipschitz: `|phi_i(u) - phi_i(v)| <= dist(u, v)` for all `u, v`.
+2. Therefore, for any potential `i`: `|phi_i(v) - phi_i(t)| <= dist(v, t)`.
+3. The maximum over admissible bounds is itself admissible: `h(v, t) = max_i |phi_i(v) - phi_i(t)| <= dist(v, t)`.
+4. Consistency follows from the triangle inequality on each `phi_i`.
 
 ### Complexity
 
 | Operation | Time Complexity | Space Complexity |
-|-----------|-----------------|------------------|
-| Preprocessing | O(V) | O(V) |
+|---|---|---|
+| Preprocessing | O(K · (V + E) log V) | O(K · V) |
 | Query | O((V + E) log V) | O(V) |
+
+Where `K` = number of potentials + landmarks (auto-tuned, typically 8–24).
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
 - C++20 compiler (GCC 11+, Clang 14+, MSVC 2022+)
 - CMake 3.20+
+- (Optional) OpenMP, Intel TBB
 
 ### Build
 
@@ -130,188 +127,232 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
 ```
 
-### Run Benchmarks
+### Run
 
 ```bash
+# Main engine
+./photon
+
 # Comprehensive benchmark
-./dash_benchmark
-
-# Theoretical analysis
-./dash_research
-
-# Quick test
 ./photon_bench
+
+# LIPS budget-matched ablation study
+./lips_ablation
+
+# Algorithm showdown (LIPS vs DASH vs Dijkstra vs Bidirectional)
+./algorithm_showdown
+
+# Real-world SNAP dataset benchmark
+./real_world_benchmark
 ```
 
 ### Usage Example
 
 ```cpp
-#include <photon/dash.hpp>
-
-using namespace photon::dash;
+#include <photon/lops.hpp>
+#include <photon/graph.hpp>
 
 int main() {
-    // Create your graph
-    Graph graph = load_graph("social_network.txt");
-    
-    // Initialize DASH
-    DASH dash;
-    dash.preprocess(graph);  // O(V) preprocessing
-    
-    // Query (auto-selects best strategy)
-    auto result = dash.query(source, target);
-    
+    using namespace photon;
+
+    // Build a graph
+    GraphBuilder builder(1000);
+    builder.add_edge(0, 1, 1.0f);
+    builder.add_edge(1, 2, 2.0f);
+    // ... add more edges
+    Graph graph = builder.build();
+
+    // Initialize LOPS
+    lops::LOPS solver;
+    solver.preprocess(graph);  // Auto-tunes all parameters
+
+    // Query — exact (optimal)
+    auto result = solver.query_exact(0, 2);
     std::cout << "Distance: " << result.distance << "\n";
-    std::cout << "Time: " << result.time_microseconds << " μs\n";
-    std::cout << "Speedup: " << result.speedup << "×\n";
-    
+    std::cout << "Time: " << result.time_microseconds << " us\n";
+
+    // Query — weighted (faster, near-optimal)
+    auto fast = solver.query_approx(0, 2, 1.3f);
+
+    // Query — hybrid (fast + optimal)
+    auto best = solver.query_hybrid(0, 2);
+
     return 0;
 }
 ```
 
----
+### Custom Parameters
 
-## 📈 Benchmarks
+```cpp
+lops::LOPSParams params;
+params.num_potentials = 12;       // Number of LIPS potentials
+params.num_anchors = 32;          // Anchors per potential
+params.num_landmarks = 8;         // ALT-style landmarks
+params.degree_weighted = true;    // Bias anchors toward hubs
+params.use_bidirectional = true;  // Enable bidirectional search
+params.symmetric_labels = true;   // Symmetric random labels
 
-### Social Networks (CV ≈ 1.25)
-
-```
-════════════════════════════════════════════════════════════════════
-📊 Social 20K (20000 nodes, 119988 edges)
-════════════════════════════════════════════════════════════════════
-
-  DASH Config: α=0.40, CV=1.28 [SCALE-FREE DETECTED]
-
-  Algorithm          │Avg Time   │Speedup  │Optimal    
-  ──────────────────┼──────────┼────────┼──────────
-  Dijkstra           │   450.2μs │   1.00× │ 300/300 ✓
-  DASH               │    22.4μs │  20.11× │ 300/300 ✓
-  DASH-Bidir         │    18.2μs │  24.73× │ 300/300 ✓
-```
-
-### Scale-Free Networks (CV ≈ 1.0)
-
-```
-════════════════════════════════════════════════════════════════════
-📊 Scale-Free 10K (10000 nodes, 155052 edges)
-════════════════════════════════════════════════════════════════════
-
-  DASH Config: α=0.40, CV=0.98 [SCALE-FREE DETECTED]
-
-  Algorithm          │Avg Time   │Speedup  │Optimal    
-  ──────────────────┼──────────┼────────┼──────────
-  Dijkstra           │   357.2μs │   1.00× │ 300/300 ✓
-  DASH               │    12.5μs │  28.53× │ 277/300
-  DASH-Bidir         │     9.6μs │  37.19× │ 277/300
+lops::LOPS solver;
+solver.preprocess(graph, params);
 ```
 
 ---
 
-## 🔄 Comparison with Other Algorithms
+## PHOTON Engine
+
+LOPS is the primary novel algorithm in the **PHOTON** shortest path engine — a C++20 framework providing multiple search strategies:
+
+| Strategy | Description |
+|---|---|
+| Dijkstra | Classic single-source baseline |
+| Bidirectional SIMD | SIMD-accelerated bidirectional Dijkstra |
+| Delta-Stepping | Parallel delta-stepping (multi-threaded) |
+| A\* | A\* with pluggable heuristic |
+| **LOPS/LIPS** | **Lipschitz-Optimized Potential Search** |
+| Parallel Wavefront | Lock-free parallel wavefront search |
+| Micro-CH | Adaptive micro contraction hierarchy |
+| DASH | Degree-Adaptive Shortest-path Heuristic (legacy) |
+
+Engine features:
+- Automatic strategy selection based on graph topology
+- Thread-safe query cache with LRU eviction
+- SIMD-accelerated priority queue (AVX-512, AVX2, ARM NEON)
+- OpenMP and TBB parallel support
+- Cache-aligned 8-byte edge structures
+- Batch query API
+
+---
+
+## Comparison with Other Algorithms
 
 | Algorithm | Preprocessing | Query | Optimality | Coordinates | Best For |
-|-----------|---------------|-------|------------|-------------|----------|
-| **DASH** | O(V) | O((V+E) log V) | ✅ 100%* | ❌ Not needed | Scale-free |
-| Dijkstra | O(1) | O((V+E) log V) | ✅ 100% | ❌ Not needed | General |
-| A* | O(1) | O((V+E) log V) | ✅ 100% | ✅ Required | Euclidean |
-| ALT | O(L×V×E) | O((V+E) log V) | ✅ 100% | ❌ Not needed | Road |
-| CH | O(V log V × E) | O(log V) | ✅ 100% | ❌ Not needed | Static |
-| Hub Labeling | O(V × avg_label) | O(label) | ✅ 100% | ❌ Not needed | Static |
+|---|---|---|---|---|---|
+| **LOPS** | O(K(V+E) log V) | O((V+E) log V) | 100% | Not needed | General / Non-geometric |
+| ALT | O(L(V+E) log V) | O((V+E) log V) | 100% | Not needed | Geometric / Road |
+| A\* | O(1) | O((V+E) log V) | 100% | Required | Euclidean |
+| Dijkstra | O(1) | O((V+E) log V) | 100% | Not needed | General (baseline) |
+| CH | O(V log V · E) | O(log V) | 100% | Not needed | Static road |
+| Hub Labeling | O(V · avg_label) | O(label) | 100% | Not needed | Static |
 
-*DASH-Single is 100% optimal; DASH-Bidir is 80-92% optimal.
+### Key Advantages of LOPS
 
-### Key Advantages of DASH
-
-1. **No coordinates needed**: Unlike A*, works on any graph
-2. **Minimal preprocessing**: O(V) vs O(V×E) for ALT
-3. **Dynamic-friendly**: Can handle edge changes easily
-4. **Auto-tuning**: Adapts to graph structure automatically
-5. **Significant speedup**: 10-30× on scale-free networks
+1. **Complementary to ALT** — Captures structure that landmarks miss in non-geometric graphs
+2. **No coordinates needed** — Works on any graph, unlike Euclidean A\*
+3. **Provably admissible** — Guarantees optimal paths with exact mode
+4. **Auto-tuning** — All parameters self-adjust based on graph topology
+5. **Flexible query modes** — Exact, weighted, and hybrid options
+6. **Dynamic-friendly** — Preprocessing is lightweight compared to CH
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-DASH/
-├── include/
-│   └── photon/
-│       ├── dash.hpp          # Main DASH implementation
-│       ├── graph.hpp         # Graph data structures
-│       ├── core.hpp          # Core types and constants
-│       └── photon.hpp        # All-in-one header
-├── src/
-│   └── graph/
-│       ├── graph.cpp         # Graph implementation
-│       └── graph_builder.cpp # Graph construction
-├── research/
-│   ├── dash_benchmark.cpp    # Comprehensive benchmarks
-│   ├── dash_research.cpp     # Theoretical analysis
-│   └── RESEARCH_LOG.md       # Research documentation
-├── CMakeLists.txt
+LOPS/
+├── include/photon/              # Header-only core library
+│   ├── lops.hpp                 # LOPS implementation (primary algorithm)
+│   ├── photon.hpp               # All-in-one convenience header
+│   ├── core.hpp                 # Core types, Edge, PathResult, GraphStats
+│   ├── graph.hpp                # Graph data structure (CSR format)
+│   ├── engine.hpp               # PhotonEngine, StrategySelector, QueryCache
+│   ├── search.hpp               # Dijkstra, Bidirectional, Delta-Stepping, A*
+│   ├── simd_queue.hpp           # SIMD-accelerated priority queue
+│   └── dash.hpp                 # DASH algorithm (legacy)
+│
+├── src/                         # Implementation files
+│   ├── main.cpp                 # Main executable
+│   ├── graph/                   # Graph, builder, Morton cache layout
+│   ├── engine/                  # Engine, strategy selector
+│   ├── search/                  # All search algorithm implementations
+│   ├── queue/                   # SIMD priority queue
+│   ├── cache/                   # Query cache
+│   └── landmarks/               # Learned landmarks
+│
+├── research/                    # Research experiments and papers
+│   ├── RESEARCH_LOG.md          # Detailed research documentation
+│   ├── DASH_paper.tex           # LaTeX paper drafts
+│   ├── why_lips_section.md      # LIPS motivation and analysis
+│   ├── lips_ablation.cpp        # Budget-matched ALT vs LIPS ablation
+│   ├── algorithm_showdown.cpp   # Head-to-head algorithm comparison
+│   ├── real_world_benchmark.cpp # SNAP dataset benchmark
+│   ├── ewd_*.cpp                # Edge-weighted digraph experiments
+│   └── figures/                 # Generated plots (SVG)
+│
+├── algorithms/                  # Python algorithm prototypes
+│   ├── hyperpath.py             # Hyperpath exploration
+│   └── novel.py                 # Novel algorithm experiments
+│
+├── concepts/                    # Concept/prototype code
+├── benchmarks/                  # Benchmark harness
+├── tests/                       # Unit tests
+├── tools/                       # Utilities (SNAP dataset sampler)
+├── data/                        # Graph datasets (SNAP)
+├── legacy/                      # Legacy DASH research code
+├── website/                     # Project website (React/Vite)
+├── CMakeLists.txt               # Build system (CMake 3.20+)
 └── README.md
 ```
 
 ---
 
-## 📚 Research Documentation
+## Research Documentation
 
-See [research/RESEARCH_LOG.md](research/RESEARCH_LOG.md) for:
-- Complete experimental results
-- Theoretical proofs
-- Parameter sensitivity analysis
-- Scalability analysis
-- Publication notes
+See [research/RESEARCH_LOG.md](research/RESEARCH_LOG.md) for complete experimental results and theoretical analysis.
+
+See [research/why_lips_section.md](research/why_lips_section.md) for the motivation behind LIPS as a complementary heuristic to ALT landmarks.
 
 ---
 
-## 🎓 Citation
+## Citation
 
-If you use DASH in your research, please cite:
+If you use LOPS in your research, please cite:
 
 ```bibtex
-@article{dash2026,
-  title={DASH: A Degree-Adaptive Heuristic for Fast Shortest Path 
-         Computation in Scale-Free Networks},
-  author={PHOTON Development Team},
-  year={2026},
-  note={GitHub: https://github.com/BHAWESHBHASKAR/DASH-Degree-Adaptive-Shortest-path-Heuristic-}
+@article{lops2026,
+  title   = {LOPS: Lipschitz-Optimized Potential Search for
+             Shortest Paths in Non-Geometric Graphs},
+  author  = {Bhawesh Bhaskar},
+  year    = {2026},
+  note    = {GitHub: https://github.com/BHAWESHBHASKAR/DASH-Degree-Adaptive-Shortest-path-Heuristic-}
 }
 ```
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-- [x] Core DASH algorithm
-- [x] Auto-tuning based on CV
-- [x] Bidirectional variant
-- [x] Comprehensive benchmarks
-- [x] Theoretical analysis
-- [ ] Real-world dataset testing (SNAP)
-- [ ] Comparison with ALT/CH
-- [ ] GPU acceleration
-- [ ] Dynamic graph support
+- [x] Core LOPS/LIPS algorithm
+- [x] ALT-style landmark integration
+- [x] Combined heuristic (max of LIPS + ALT)
+- [x] Bidirectional search support
+- [x] Degree-weighted anchor sampling
+- [x] Auto-tuning based on graph CV
+- [x] Budget-matched ablation study
+- [x] SIMD-accelerated priority queue
+- [x] SNAP real-world dataset benchmarks
 - [ ] Formal paper publication
+- [ ] GPU-accelerated preprocessing
+- [ ] Dynamic graph support
+- [ ] Parallel potential construction
 
 ---
 
-## 📜 License
+## License
 
-MIT License - Free for all use.
+MIT License — Free for all use.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## 📧 Contact
+## Contact
 
 For questions or collaboration opportunities, please open an issue on GitHub.
 
 ---
 
-*Last Updated: February 5, 2026*
+*Last Updated: February 17, 2026*
