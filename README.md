@@ -56,7 +56,7 @@ In **scale-free networks** (social networks, web graphs, citation networks), a s
 
 ---
 
-## 🔬 Algorithm Variants
+##  Algorithm Variants
 
 ### DASH-Single
 - **Description**: Single-source search with degree-biased priority
@@ -230,7 +230,7 @@ int main() {
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 DASH/
